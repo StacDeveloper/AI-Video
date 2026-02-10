@@ -6,7 +6,7 @@ import * as Sentry from "@sentry/node"
 
 const clerkWebHooks = async (req: Request, res: Response) => {
     try {
-
+        console.log("Api-Triggered")
         const WebhookSecret = process.env.CLERK_WEBHOOK_SIGNING_SECRET
         if (!WebhookSecret) {
             return res.json({ success: false, message: "No webhooksecert" })

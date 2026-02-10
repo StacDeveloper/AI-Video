@@ -4,9 +4,9 @@ import { getAllProject, getProjectbyId, getUserCredits, toggleProjectPublic } fr
 
 const userRouter: Router = express.Router()
 
-userRouter.get("/user/credits", protect, getUserCredits)
-userRouter.get("/user/projects", protect, getAllProject)
-userRouter.get("/user/projects/:projectId", protect, getProjectbyId)
-userRouter.get("/user/publish/:projectId", protect, toggleProjectPublic)
+userRouter.get("/credits", protect, getUserCredits)
+userRouter.get("/projects", protect, getAllProject)
+userRouter.get("/projects/:projectId", protect, getProjectbyId)
+userRouter.get("/publish/:projectId", protect, toggleProjectPublic)
 
 export default userRouter

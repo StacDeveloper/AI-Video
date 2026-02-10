@@ -1,9 +1,11 @@
 import { DollarSignIcon, FolderEditIcon, GalleryHorizontalEnd, MenuIcon, Sparkle, SparkleIcon, XIcon } from 'lucide-react';
 import { GhostButton, PrimaryButton } from './Buttons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import { useClerk, useUser, UserButton } from '@clerk/clerk-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useClerk, useUser, UserButton, useAuth } from '@clerk/clerk-react';
+import toast from 'react-hot-toast';
+import api from '../configs/axios';
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,12 +13,41 @@ export default function Navbar() {
     const { user } = useUser()
     const { openSignIn, openSignUp } = useClerk()
 
+    const [credits, SetCredits] = useState<number>(0)
+
+    const { pathname } = useLocation()
+    const { getToken } = useAuth()
+
+
     const navLinks = [
         { name: 'Home', href: '/' },
         { name: 'Create', href: '/generate' },
         { name: 'Community', href: '/community' },
         { name: 'Plan', href: '/plans' },
     ];
+
+    const getUserCredits = async () => {
+        try {
+            const token = await getToken()
+            const { data } = await api.get("/api/user/credits", { headers: { Authorization: `Bearer ${token}` } })
+
+            if (data.success) {
+                SetCredits(data.credits)
+                console.log(data.credits)
+            }
+
+        } catch (error: any) {
+            console.log(error)
+            toast.error(error.message || error.code)
+
+        }
+    }
+
+    useEffect(() => {
+        if (user) {
+            (async () => await getUserCredits())()
+        }
+    }, [user, pathname])
 
     return (
         <motion.nav className='fixed top-5 left-0 right-0 z-50 px-4'
@@ -53,7 +84,7 @@ export default function Navbar() {
                         <GhostButton
                             onClick={() => navigate("/plans")}
                             className='border-none text-gray-300 sm:py-1.5'>
-                            Credits :
+                            Credits : {credits}
                         </GhostButton>
                         <UserButton>
                             <UserButton.MenuItems>
