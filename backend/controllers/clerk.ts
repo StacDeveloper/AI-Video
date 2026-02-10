@@ -56,14 +56,20 @@ const clerkWebHooks = async (req: Request, res: Response) => {
                     }
                     console.log(planId)
 
-                    await prisma.user.update({
+                    await prisma.user.upsert({
                         where: { id: clerkUserId },
-                        data: {
+                        update: {
                             credits: { increment: credits[planId] }
+                        },
+                        create: {
+                            id: clerkUserId,
+                            credits: credits[planId],
+                            email: data?.email_addresses[0]?.email_address,
+                            name: data?.first_name + " " + data?.last_name,
+                            image: data.image_url,
+
                         }
                     })
-
-
                 }
                 break
             }
